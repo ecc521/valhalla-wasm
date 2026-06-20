@@ -1,0 +1,57 @@
+{
+  "name": "valhalla-wasm",
+  "version": "0.1.0",
+  "description": "Valhalla routing engine compiled to WebAssembly — fully offline, in-browser turn-by-turn routing with lazy tile loading.",
+  "type": "module",
+  "license": "MIT",
+  "author": "rivers.run",
+  "homepage": "https://github.com/ecc521/valhalla-wasm#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecc521/valhalla-wasm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ecc521/valhalla-wasm/issues"
+  },
+  "keywords": [
+    "valhalla",
+    "webassembly",
+    "wasm",
+    "routing",
+    "offline",
+    "openstreetmap",
+    "emscripten",
+    "turn-by-turn",
+    "navigation",
+    "pwa"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./worker": "./web/valhallaRouting.worker.ts",
+    "./valhalla.js": "./valhalla.js",
+    "./valhalla.wasm": "./valhalla.wasm",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "web",
+    "valhalla.js",
+    "valhalla.wasm",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

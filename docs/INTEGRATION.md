@@ -1,13 +1,23 @@
 # Integration
 
-How to route in the browser with the prebuilt module and the `web/` worker.
+How to route in the browser with the prebuilt module and the routing worker.
+
+```bash
+npm install valhalla-wasm
+```
 
 ## 1. Serve the artifacts at the site root
 
-The default worker loads `valhalla.js` and locates `valhalla.wasm` at the site root
-(`/valhalla.js`, `/valhalla.wasm`). Copy both from this repo into your app's served root
-(e.g. a Vite `public/` dir). To serve them elsewhere, change `importScripts(...)` and the
-`locateFile` callback in `web/valhallaRouting.worker.ts`.
+The worker loads `valhalla.js` and locates `valhalla.wasm` at the site root
+(`/valhalla.js`, `/valhalla.wasm`). Copy both from the package into your app's served root
+(e.g. a Vite `public/` dir):
+
+```bash
+cp node_modules/valhalla-wasm/valhalla.js node_modules/valhalla-wasm/valhalla.wasm public/
+```
+
+To serve them elsewhere, change the `importScripts(...)` path and the `locateFile` callback
+in your worker.
 
 ## 2. Get tiles into storage
 
@@ -28,8 +38,11 @@ decompressed bytes — store those.)
 
 ## 3. Spawn the worker and route
 
+Copy `web/valhallaRouting.worker.ts` from the package into your app (it imports the
+building blocks from `valhalla-wasm`), then instantiate it the way your bundler expects:
+
 ```ts
-const worker = new Worker(new URL('./web/valhallaRouting.worker.ts', import.meta.url), { type: 'module' });
+const worker = new Worker(new URL('./valhallaRouting.worker.ts', import.meta.url), { type: 'module' });
 
 worker.onmessage = (e) => {
   const r = e.data; // RoutingResponse
@@ -58,9 +71,7 @@ Swap OPFS for any synchronous random-read source by implementing a `TileSourceFa
 Copy `web/valhallaRouting.worker.ts` and replace the factory:
 
 ```ts
-import { createRoutingEngine } from './routingCore';
-import { parseTarIndex } from './tileSource';
-import type { TileSource } from './types';
+import { createRoutingEngine, parseTarIndex, type TileSource } from 'valhalla-wasm';
 
 // Example: tiles already fully in memory (e.g. bundled or fetched once).
 function bufferTileSourceFactory(buffers: Record<string, Uint8Array>) {

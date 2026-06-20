@@ -5,7 +5,7 @@
 // the reference implementation: a `<region>_routing.tar` archive stored in OPFS,
 // read lazily via a SyncAccessHandle.
 
-import type { TarEntry, TileSource } from './types';
+import type { TarEntry, TileSource } from './types.js';
 
 /**
  * Parse a (possibly uncompressed) tar archive and return the index of regular
@@ -93,11 +93,11 @@ export function createOpfsTarTileSourceFactory(dir = 'offline_maps') {
             const rootDir = await navigator.storage.getDirectory();
             const mapDir = await rootDir.getDirectoryHandle(dir, { create: false });
             const fileHandle = await mapDir.getFileHandle(`${region}_routing.tar`, { create: false });
-            // @ts-expect-error createSyncAccessHandle is worker-only and not in all lib.dom versions
-            const handle: FileSystemSyncAccessHandle = await fileHandle.createSyncAccessHandle();
+            // createSyncAccessHandle is worker-only and absent from lib.dom; type as any.
+            const handle: any = await (fileHandle as any).createSyncAccessHandle();
 
-            const totalSize = handle.getSize();
-            const read = (into: Uint8Array, at: number, _length: number) => handle.read(into, { at });
+            const totalSize: number = handle.getSize();
+            const read = (into: Uint8Array, at: number, _length: number): number => handle.read(into, { at });
             const entries = parseTarIndex(read, totalSize);
 
             return { entries, read };

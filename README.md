@@ -28,14 +28,36 @@ cp ../scripts/build/US-DC_routing.tar .
 npx --yes serve .                       # open the URL, click "Route"
 ```
 
-Then integrate it into your own app — copy `valhalla.js` + `valhalla.wasm` to your served
-root and the `web/` worker into your bundle. Full guide: [docs/INTEGRATION.md](docs/INTEGRATION.md).
+## Install from npm
+
+```bash
+npm install valhalla-wasm
+```
+
+The package exports the storage-agnostic building blocks; you wire them into a Web Worker
+in your app (worker instantiation is bundler-specific). Copy the prebuilt module from the
+package to your served root:
+
+```bash
+cp node_modules/valhalla-wasm/valhalla.js node_modules/valhalla-wasm/valhalla.wasm public/
+```
 
 ```ts
-const worker = new Worker(new URL('./web/valhallaRouting.worker.ts', import.meta.url));
-worker.onmessage = (e) => { /* RoutingResponse: geometry, instructions, summary */ };
-worker.postMessage({ start: [-77.036, 38.907], end: [-77.009, 38.890], regions: ['US-DC'] });
+// your-worker.ts
+import { createRoutingEngine, createOpfsTarTileSourceFactory } from 'valhalla-wasm';
+importScripts('/valhalla.js');
+declare const ValhallaModule: (o?: any) => Promise<any>;
+
+const route = createRoutingEngine({
+  initModule: () => ValhallaModule({ locateFile: (p: string) => `/${p}` }),
+  tileSourceFactory: createOpfsTarTileSourceFactory('offline_maps'),
+  onProgress: (m) => self.postMessage({ success: false, progress: m }),
+});
+self.onmessage = async (e) => self.postMessage(await route(e.data));
 ```
+
+`web/valhallaRouting.worker.ts` is exactly this wiring — copy it as a starting point. Full
+guide: [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## Layout
 

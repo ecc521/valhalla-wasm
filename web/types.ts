@@ -1,5 +1,11 @@
 // Public types for the Valhalla-WASM browser routing engine.
 
+/** A GeoJSON-style LineString. Defined locally so the package has no type deps. */
+export interface LineString {
+    type: 'LineString';
+    coordinates: [number, number][]; // [lng, lat] positions
+}
+
 /** A routing request sent to the worker. Coordinates are [lng, lat] (GeoJSON order). */
 export interface RoutingRequest {
     start: [number, number];
@@ -25,7 +31,7 @@ export interface RoutingSummary {
 
 export interface RoutingResponse {
     success: boolean;
-    geometry?: GeoJSON.LineString; // the route path, [lng, lat] coordinates
+    geometry?: LineString; // the route path, [lng, lat] coordinates
     instructions?: RoutingInstruction[];
     summary?: RoutingSummary;
     error?: string;

@@ -10,9 +10,9 @@
 
 /// <reference lib="webworker" />
 
-import type { RoutingRequest } from './types';
-import { createRoutingEngine } from './routingCore';
-import { createOpfsTarTileSourceFactory } from './tileSource';
+import type { RoutingRequest } from './types.js';
+import { createRoutingEngine } from './routingCore.js';
+import { createOpfsTarTileSourceFactory } from './tileSource.js';
 
 // Some Emscripten builds expect a `global` reference.
 (self as any).global = self;

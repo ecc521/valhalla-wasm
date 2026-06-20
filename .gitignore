@@ -18,6 +18,10 @@ example/valhalla.js
 example/valhalla.wasm
 example/*_routing.tar
 
+# Build output (generated on publish via prepack)
+dist/
+*.tsbuildinfo
+
 # Node
 node_modules/
 .env
@@ -27,3 +31,6 @@ node_modules/
 
 # NOTE: the prebuilt WASM artifacts valhalla.js and valhalla.wasm are
 # intentionally committed (see README "Quick start") and are NOT ignored.
+
+# moved-aside host vcpkg (build scratch)
+vcpkg.host-bak/

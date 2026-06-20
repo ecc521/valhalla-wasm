@@ -7,8 +7,8 @@
 // prebuilt valhalla.js. Supply your own to route from native FS, HTTP, etc.
 
 import type {
-    RoutingRequest, RoutingResponse, RoutingInstruction, TileSource, TileSourceFactory,
-} from './types';
+    RoutingRequest, RoutingResponse, RoutingInstruction, TileSource, TileSourceFactory, LineString,
+} from './types.js';
 
 let _nextDeviceMajor = 80;
 
@@ -196,7 +196,7 @@ function performRouting(valhallaRouter: any, start: number[], end: number[]): Ro
         text: m.instruction, distance: m.length, time: m.time, type: m.type ?? 0,
     }));
 
-    let geometry: GeoJSON.LineString | undefined;
+    let geometry: LineString | undefined;
     if (leg.shape) geometry = { type: 'LineString', coordinates: decodePolyline(leg.shape) };
 
     return {

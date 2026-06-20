@@ -59,5 +59,5 @@ routing. Tiles must exist for the whole corridor or routing fails near the gap.
 
 `build_tiles.js --gzip` also emits `<id>_routing.tar.gz` for cheaper transport. Serve it
 with `Content-Encoding: gzip` so the browser decompresses on download and you store the
-plain `.tar`. (rivers.run additionally pre-compresses individual `.gph` tiles with a custom
-`VZIP` container; that optimization is rivers.run-specific and not included here.)
+plain `.tar`. The worker reads the tiles uncompressed — the prebuilt `valhalla.wasm` is
+stock Valhalla and expects standard tile bytes.

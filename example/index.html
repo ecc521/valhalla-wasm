@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>valhalla-wasm offline routing demo</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+  label { display: inline-block; width: 8rem; }
+  input { width: 12rem; }
+  button { margin-top: .75rem; padding: .4rem .9rem; }
+  pre { background: #f4f4f4; padding: 1rem; overflow: auto; white-space: pre-wrap; }
+  .row { margin: .25rem 0; }
+</style>
+
+<h1>valhalla-wasm offline routing</h1>
+<p>
+  Routes entirely in the browser using <code>valhalla.wasm</code> and a routing-tile tar
+  stored in OPFS. See <a href="README.md">README.md</a> for setup (build the worker bundle
+  and drop a <code>&lt;region&gt;_routing.tar</code> next to this page).
+</p>
+
+<div class="row"><label>Region id</label><input id="region" value="US-DC" /></div>
+<div class="row"><label>Start [lng,lat]</label><input id="start" value="-77.036,38.907" /></div>
+<div class="row"><label>End [lng,lat]</label><input id="end" value="-77.009,38.890" /></div>
+<button id="go">Route</button>
+
+<pre id="out">Ready.</pre>
+
+<script type="module">
+  const out = document.getElementById('out');
+  const log = (m) => { out.textContent += '\n' + m; };
+
+  // Load the region tar into OPFS (once). Expects ./<region>_routing.tar next to this page.
+  async function ensureTileInOpfs(region) {
+    const root = await navigator.storage.getDirectory();
+    const dir = await root.getDirectoryHandle('offline_maps', { create: true });
+    try { await dir.getFileHandle(`${region}_routing.tar`, { create: false }); return; } catch {}
+    log(`Downloading ${region}_routing.tar into OPFS…`);
+    const buf = await (await fetch(`./${region}_routing.tar`)).arrayBuffer();
+    const fh = await dir.getFileHandle(`${region}_routing.tar`, { create: true });
+    const w = await fh.createWritable();
+    await w.write(buf); await w.close();
+    log(`Stored ${(buf.byteLength / 1e6).toFixed(1)} MB.`);
+  }
+
+  document.getElementById('go').onclick = async () => {
+    out.textContent = 'Routing…';
+    try {
+      const region = document.getElementById('region').value.trim();
+      const start = document.getElementById('start').value.split(',').map(Number);
+      const end = document.getElementById('end').value.split(',').map(Number);
+      await ensureTileInOpfs(region);
+
+      const worker = new Worker('./valhalla.worker.bundle.js'); // classic worker (uses importScripts)
+      worker.onmessage = (e) => {
+        const r = e.data;
+        if (r.progress) { log(r.progress); return; }
+        if (r.success) {
+          log(`\n✅ ${r.summary.distance.toFixed(2)} mi, ${Math.round(r.summary.time / 60)} min`);
+          log(`Maneuvers: ${r.instructions.length}`);
+          log(`Shape points: ${r.geometry?.coordinates.length ?? 0}`);
+          worker.terminate();
+        } else if (r.error) {
+          log(`\n❌ ${r.error}`); worker.terminate();
+        }
+      };
+      worker.postMessage({ start, end, regions: [region] });
+    } catch (err) {
+      log(`\n❌ ${err.message || err}`);
+    }
+  };
+</script>

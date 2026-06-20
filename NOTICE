@@ -1,0 +1,26 @@
+valhalla-wasm
+=============
+
+The build scripts, the Embind wrapper (src/valhalla_worker.cpp), the browser
+routing worker (web/), and the tile-building reference scripts (scripts/) in this
+repository are licensed under the MIT License (see LICENSE), Copyright (c) 2025
+rivers.run.
+
+This project builds and redistributes third-party software:
+
+- Valhalla (https://github.com/valhalla/valhalla) — the C++ routing engine that
+  is compiled to WebAssembly here. Valhalla is licensed under the MIT License,
+  Copyright (c) Valhalla contributors. The compiled artifacts (valhalla.js,
+  valhalla.wasm) are derived works of Valhalla and its dependencies.
+
+- The build links several C++ libraries fetched via vcpkg at build time
+  (protobuf, sqlite3, libcurl, zlib, lz4, abseil, boost, rapidjson, date,
+  cxxopts). Each is distributed under its own license; consult the respective
+  upstream projects.
+
+- Tiles are built using the public Docker image
+  ghcr.io/gis-ops/docker-valhalla, which packages the upstream Valhalla CLI
+  tools.
+
+Pinned upstream references used to produce the committed prebuilt artifacts are
+recorded in versions.lock.

@@ -1,0 +1,9 @@
+# Valhalla-WASM Antigravity Ignore File
+
+# Large External Dependencies
+vcpkg/
+
+# Build Artifacts
+valhalla/build/
+valhalla.wasm
+valhalla.js

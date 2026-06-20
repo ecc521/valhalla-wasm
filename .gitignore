@@ -1,0 +1,29 @@
+# Upstream sources fetched at build time (pinned in versions.lock)
+/valhalla/
+/vcpkg/
+
+# Build intermediates
+/valhalla/build/
+
+# Tile-building working dirs and OSM/tile artifacts (can be large)
+scripts/valhalla_build/
+scripts/valhalla_build_simplified/*.osm.pbf
+scripts/valhalla_build_simplified/*_valhalla/
+scripts/valhalla_build_simplified/*.tar
+scripts/valhalla_build_simplified/*.tar.gz
+
+# Example generated/copied files
+example/valhalla.worker.bundle.js
+example/valhalla.js
+example/valhalla.wasm
+example/*_routing.tar
+
+# Node
+node_modules/
+.env
+
+# OS
+.DS_Store
+
+# NOTE: the prebuilt WASM artifacts valhalla.js and valhalla.wasm are
+# intentionally committed (see README "Quick start") and are NOT ignored.

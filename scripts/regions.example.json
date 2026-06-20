@@ -1,0 +1,4 @@
+[
+  { "id": "US-DC", "geofabrik": "north-america/us/district-of-columbia-latest.osm.pbf" },
+  { "id": "US-DE", "geofabrik": "north-america/us/delaware-latest.osm.pbf" }
+]

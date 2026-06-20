@@ -1,14 +1,11 @@
-# Pinned upstream references for reproducible builds.
-# These are the references vendored when the committed prebuilt artifacts
-# (valhalla.js / valhalla.wasm) were produced. compile_wasm.sh reads VALHALLA_REF
-# and VCPKG_REF; the Dockerfile reads EMSDK_VERSION (see below).
+# Fully-pinned toolchain for reproducible builds. The committed prebuilt artifacts
+# (valhalla.js / valhalla.wasm) are the output of these exact references.
+# compile_wasm.sh reads VALHALLA_REF and VCPKG_REF; the Dockerfile reads EMSDK_VERSION.
 
 VALHALLA_REF=f7764b337de93530374ac90978f638734139d93b
 VCPKG_REF=89dd0f4d241136b843fb55813b2f0fa6448c204d
 
-# Emscripten SDK. The committed artifacts were built with emsdk "latest" as of
-# 2025-05; we have not re-verified a specific tag. For a fully reproducible build,
-# set EMSDK_VERSION to a concrete tag (e.g. 4.0.6) via:
-#   docker build --build-arg EMSDK_VERSION=4.0.6 -t valhalla-wasm-builder .
-# Leaving it at "latest" tracks the newest Emscripten release.
-EMSDK_VERSION=latest
+# Emscripten SDK, pinned to a concrete release. emsdk versions are immutable, so
+# this resolves to the same toolchain (LLVM/wasm-binaries) on every build. Override
+# with: docker build --build-arg EMSDK_VERSION=<version> .
+EMSDK_VERSION=6.0.0

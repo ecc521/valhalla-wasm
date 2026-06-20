@@ -19,10 +19,9 @@ RUN apt-get update && apt-get install -y \
     jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Emscripten. Pin a concrete version for reproducible builds, e.g.
-#   docker build --build-arg EMSDK_VERSION=4.0.6 .
-# Default "latest" tracks the newest release (see versions.lock).
-ARG EMSDK_VERSION=latest
+# Install Emscripten, pinned for reproducible builds (see versions.lock).
+# Override with: docker build --build-arg EMSDK_VERSION=<version> .
+ARG EMSDK_VERSION=6.0.0
 RUN git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk && \
     cd /opt/emsdk && \
     ./emsdk install "${EMSDK_VERSION}" && \
